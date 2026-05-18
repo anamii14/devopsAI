@@ -1,16 +1,29 @@
 import json
 from collections import defaultdict
 from ai_part import generate_ai_report
+from graph_visualizer import generate_graph
+
+import os
+import matplotlib.pyplot as plt
 
 
 # 1. Read JSON logs
 def read_logs(file_path):
     logs = []
-    with open(file_path, "r") as f:
-        for line in f:
-            logs.append(json.loads(line.strip()))
-    return logs
 
+    with open(file_path, "r", encoding="utf-8") as f:
+        for i, line in enumerate(f, 1):
+            line = line.strip()
+
+            if not line:
+                continue
+
+            try:
+                logs.append(json.loads(line))
+            except json.JSONDecodeError:
+                print(f"[LINE {i}] Invalid JSON → {line}")
+
+    return logs
 
 # 2. Deduplicate
 def deduplicate(logs):
@@ -37,6 +50,7 @@ def create_incidents(freq, logs):
         base_log = log_map.get(issue)
 
         level = base_log["level"] if base_log else ""
+        timestamp = base_log["timestamp"] if base_log else None
 
         if level == "CRITICAL":
             severity = "CRITICAL"
@@ -52,7 +66,8 @@ def create_incidents(freq, logs):
             "issue": message,
             "count": count,
             "severity": severity,
-            "level": level
+            "level": level,
+            "timestamp": timestamp   
         })
 
     return incidents
@@ -74,9 +89,7 @@ def main():
     incidents = create_incidents(freq, logs)
     timeline = generate_timeline(logs)
 
-    print("\n================ INCIDENTS ================\n")
-    for i in incidents:
-        print(i)
+    
 
     print("\n================ TIMELINE ================\n")
     for t in timeline:
@@ -85,11 +98,17 @@ def main():
     print("\n================ AI REPORT ================\n")
 
     try:
-        report = generate_ai_report(incidents, timeline)
-        print(report)
+       report = generate_ai_report(incidents, timeline)
+
+       with open("ai_report.txt", "w", encoding="utf-8") as f:
+        f.write(str(report))
+
+       print("AI report saved to ai_report.txt")
     except Exception as e:
         print("AI REPORT FAILED:", str(e))
 
+    generate_graph(incidents)    
+    
 
 if __name__ == "__main__":
     main()

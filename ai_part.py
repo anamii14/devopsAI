@@ -42,17 +42,11 @@ Also identify:
 - likely root trigger event
 - whether this is symptom vs root cause
 
-
 Rules:
-- reduce unnecessary symbols and headings
-- Points rather than paragraphs
-- Be concise and dont be repetitive
-- Be precise and technical
-- Do NOT repeat raw logs
-- Infer relationships between incidents
-- Group related failures logically
-- No emojis
-- Keep it production-grade (like Datadog report)
+- use points instead of long paragraphs
+- professional output simlar to devops tools like datadog
+- concise, technical, no emojis
+- no raw logs repetition
 """
 
     try:
@@ -76,7 +70,12 @@ Rules:
 
         result = response.json()
 
-        # safer extraction
+        if response.status_code != 200:
+            return f"HTTP ERROR {response.status_code}: {result}"
+
+        if "choices" not in result:
+            return f"API ERROR RESPONSE: {result}"
+
         return result["choices"][0]["message"]["content"]
 
     except Exception as e:
