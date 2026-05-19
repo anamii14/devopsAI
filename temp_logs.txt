@@ -1,0 +1,8 @@
+{"timestamp":"2026-05-18T10:01:12Z","level":"ERROR","service":"payment-service","message":"Database connection failed","host":"server-1"}
+{"timestamp":"2026-05-18T10:01:14Z","level":"ERROR","service":"payment-service","message":"Database connection failed","host":"server-1"}
+{"timestamp":"2026-05-18T10:01:20Z","level":"WARNING","service":"api-gateway","message":"API latency increasing","host":"server-2"}
+{"timestamp":"2026-05-18T10:01:25Z","level":"ERROR","service":"api-gateway","message":"API timeout","host":"server-2"}
+{"timestamp":"2026-05-18T10:01:40Z","level":"CRITICAL","service":"payment-service","message":"Payment service down","host":"server-1"}
+{"timestamp":"2026-05-18T10:01:45Z","level":"INFO","service":"auth-service","message":"User login successful","host":"server-3"}
+
+
