@@ -2,39 +2,54 @@
 
 **Incident Summary**
 
-* Multiple errors occurred across services, resulting in a critical outage of the payment service.
-* Timeline: 2026-05-18T10:01:12Z - 2026-05-18T10:01:45Z
+* Multiple incidents occurred between 2026-05-18T10:01:12Z and 2026-05-18T10:01:45Z
+* Affected services: payment-service, api-gateway, auth-service
+* Incident types: Database connection failure, API latency increase, API timeout, Payment service down, User login successful
 
 **Root Cause Analysis**
 
-* Likely root trigger event: Database connection failure in payment-service (2026-05-18T10:01:12Z)
+* Likely root cause: Database connection failure in payment-service (2026-05-18T10:01:12Z)
 * Possible causes:
-	+ Database connectivity issues
-	+ Payment-service configuration errors
-	+ Resource constraints (e.g., CPU, memory)
+	+ Database overload or misconfiguration
+	+ Network connectivity issues between payment-service and database
+* Cascading failures:
+	+ API latency increase in api-gateway (2026-05-18T10:01:20Z) likely caused by payment-service database connection failure
+	+ API timeout in api-gateway (2026-05-18T10:01:25Z) likely caused by API latency increase
+	+ Payment service down in payment-service (2026-05-18T10:01:40Z) likely caused by database connection failure
 
 **Impact Analysis**
 
-* Affected services:
-	+ payment-service (critical outage)
-	+ api-gateway (increased latency, timeouts)
+* Affected systems:
+	+ payment-service
+	+ api-gateway
 * Affected users:
 	+ Users attempting to make payments
 	+ Users accessing APIs through api-gateway
+* Severity:
+	+ CRITICAL: Payment service down
+	+ HIGH: Database connection failure
+	+ MEDIUM: API timeout
+	+ LOW: API latency increase
+	+ INFO: User login successful (no impact)
 
 **Recommended Fixes**
 
-* Investigate and resolve database connectivity issues
-* Review payment-service configuration and resource allocation
-* Implement monitoring and alerting for database connection failures
-* Optimize api-gateway configuration to reduce latency and timeouts
+* Investigate and resolve database connection failure in payment-service
+* Monitor and optimize database performance
+* Implement retry mechanisms and circuit breakers in api-gateway to handle API timeouts
+* Review and improve service dependency chain to prevent cascading failures
 
-**Additional Analysis**
+**Service Dependency Chain**
 
-* Cascading failures:
-	+ Database connection failure in payment-service led to increased latency and timeouts in api-gateway
-* Service dependency chain:
-	+ payment-service → database
-	+ api-gateway → payment-service
-* Symptom vs root cause:
-	+ Database connection failure is likely the root cause, while increased latency and timeouts in api-gateway are symptoms of the underlying issue.
+* payment-service -> database
+* api-gateway -> payment-service
+* auth-service -> (no dependencies)
+
+**Likely Root Trigger Event**
+
+* Database connection failure in payment-service (2026-05-18T10:01:12Z)
+
+**Symptom vs Root Cause**
+
+* Database connection failure is likely the root cause
+* API latency increase, API timeout, and Payment service down are symptoms of the root cause

@@ -67,6 +67,12 @@ def create_incidents(freq, logs):
         elif level == "ERROR":
             severity = "MEDIUM"
 
+        elif level == "WARNING":
+            severity = "LOW"
+
+        elif level == "INFO":
+            severity = "INFO"
+
         else:
             severity = "LOW"
 
@@ -102,11 +108,12 @@ def generate_timeline(logs):
 def print_incidents(incidents):
 
     severity_order = {
-        "CRITICAL": 4,
-        "HIGH": 3,
-        "MEDIUM": 2,
-        "LOW": 1
-    }
+    "CRITICAL": 5,
+    "HIGH": 4,
+    "MEDIUM": 3,
+    "LOW": 2,
+    "INFO": 1
+}
 
     
     sorted_incidents = sorted(

@@ -9,18 +9,20 @@ def generate_graph(incidents):
     mpl.rcParams.update(mpl.rcParamsDefault)
 
     severity_map = {
-        "LOW": 1,
-        "MEDIUM": 2,
-        "HIGH": 3,
-        "CRITICAL": 4
-    }
+    "INFO": 1,
+    "LOW": 2,
+    "MEDIUM": 3,
+    "HIGH": 4,
+    "CRITICAL": 5
+}
 
     colors = {
-        "CRITICAL": "#F4A6A6",
-        "HIGH": "#F7C59F",
-        "MEDIUM": "#FAEDCB",
-        "LOW": "#B8F2E6"
-    }
+    "INFO": "#A0C4FF",
+    "LOW": "#B8F2E6",
+    "MEDIUM": "#FAEDCB",
+    "HIGH": "#F7C59F",
+    "CRITICAL": "#F4A6A6"
+}
 
     x, y, c, labels = [], [], [], []
 
@@ -34,7 +36,8 @@ def generate_graph(incidents):
 
     plt.xlim(-0.5, len(x) - 0.5)
 
-   
+    
+    plt.axhspan(0.5, 1.5, color="#A0C4FF", alpha=0.1)
     plt.axhspan(0.5, 1.5, color="#B8F2E6", alpha=0.1)
     plt.axhspan(1.5, 2.5, color="#FAEDCB", alpha=0.1)
     plt.axhspan(2.5, 3.5, color="#F7C59F", alpha=0.1)
@@ -68,19 +71,22 @@ def generate_graph(incidents):
     plt.xlabel("Time (Incident Order)")
     plt.ylabel("Severity")
 
-    plt.yticks([1, 2, 3, 4])
-    plt.gca().set_yticklabels(["LOW", "MEDIUM", "HIGH", "CRITICAL"])
+    plt.yticks([1, 2, 3, 4, 5])
+    plt.gca().set_yticklabels(
+        ["INFO", "LOW", "MEDIUM", "HIGH", "CRITICAL"]
+)
 
     plt.title("Incident Timeline vs Severity")
 
     legend_patches = [
+        mpatches.Patch(color="#A0C4FF", label="INFO"),
         mpatches.Patch(color="#F4A6A6", label="CRITICAL"),
         mpatches.Patch(color="#F7C59F", label="HIGH"),
         mpatches.Patch(color="#FAEDCB", label="MEDIUM"),
         mpatches.Patch(color="#B8F2E6", label="LOW"),
     ]
 
-    plt.legend(handles=legend_patches, loc="upper left")
+    plt.legend(handles=legend_patches, loc="upper right")
     plt.grid(True, linestyle="--", alpha=0.3)
 
     plt.tight_layout()
