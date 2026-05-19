@@ -2,40 +2,39 @@
 
 **Incident Summary**
 
-* Multiple errors occurred across services, including payment-service and api-gateway, resulting in a critical outage.
-* The incident started with a database connection failure in payment-service and escalated to a service downtime.
+* Multiple errors occurred across services, resulting in a critical outage of the payment service.
+* Timeline: 2026-05-18T10:01:12Z - 2026-05-18T10:01:45Z
 
 **Root Cause Analysis**
 
-* Likely root cause: Database connection failure in payment-service ( HIGH severity, ERROR level)
-* Possible reasons:
-	+ Database overload or misconfiguration
-	+ Network connectivity issues between payment-service and database
-	+ Insufficient database connection pooling
+* Likely root trigger event: Database connection failure in payment-service (2026-05-18T10:01:12Z)
+* Possible causes:
+	+ Database connectivity issues
+	+ Payment-service configuration errors
+	+ Resource constraints (e.g., CPU, memory)
 
 **Impact Analysis**
 
 * Affected services:
 	+ payment-service (critical outage)
-	+ api-gateway (increased latency and timeouts)
+	+ api-gateway (increased latency, timeouts)
 * Affected users:
 	+ Users attempting to make payments
 	+ Users accessing APIs through api-gateway
 
 **Recommended Fixes**
 
-* Investigate and resolve database connection issues in payment-service
-* Implement connection pooling and retry mechanisms to prevent future failures
-* Optimize database performance and configuration
-* Monitor api-gateway latency and timeouts, and adjust resource allocation as needed
+* Investigate and resolve database connectivity issues
+* Review payment-service configuration and resource allocation
+* Implement monitoring and alerting for database connection failures
+* Optimize api-gateway configuration to reduce latency and timeouts
 
 **Additional Analysis**
 
 * Cascading failures:
-	+ Database connection failure in payment-service led to service downtime
-	+ API latency and timeouts in api-gateway may have been caused by the payment-service outage
+	+ Database connection failure in payment-service led to increased latency and timeouts in api-gateway
 * Service dependency chain:
-	+ payment-service -> database
-	+ api-gateway -> payment-service (indirect dependency)
-* Likely root trigger event: Database connection failure in payment-service
-* Symptom vs root cause: The database connection failure is likely the root cause, while the service downtime and API latency issues are symptoms.
+	+ payment-service → database
+	+ api-gateway → payment-service
+* Symptom vs root cause:
+	+ Database connection failure is likely the root cause, while increased latency and timeouts in api-gateway are symptoms of the underlying issue.

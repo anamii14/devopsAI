@@ -5,7 +5,7 @@ import matplotlib as mpl
 
 def generate_graph(incidents):
 
-    # reset style (important for weird matplotlib state issues)
+    
     mpl.rcParams.update(mpl.rcParamsDefault)
 
     severity_map = {
@@ -34,13 +34,13 @@ def generate_graph(incidents):
 
     plt.xlim(-0.5, len(x) - 0.5)
 
-    # background bands
+   
     plt.axhspan(0.5, 1.5, color="#B8F2E6", alpha=0.1)
     plt.axhspan(1.5, 2.5, color="#FAEDCB", alpha=0.1)
     plt.axhspan(2.5, 3.5, color="#F7C59F", alpha=0.1)
     plt.axhspan(3.5, 4.5, color="#F4A6A6", alpha=0.1)
 
-    #  connecting line (BEHIND nodes)
+    
     plt.plot(
         x, y,
         linestyle='-',
@@ -49,7 +49,7 @@ def generate_graph(incidents):
         zorder=1
     )
 
-    # nodes (ABOVE line, no outline)
+    
     plt.scatter(
         x, y,
         s=250,
@@ -59,9 +59,11 @@ def generate_graph(incidents):
         zorder=3
     )
 
-    # labels
-    for i, label in enumerate(labels):
+   
+    # labels 
+    for i, label in enumerate(labels): 
         plt.text(x[i], y[i] + 0.08, label, fontsize=9, ha='center')
+    
 
     plt.xlabel("Time (Incident Order)")
     plt.ylabel("Severity")
