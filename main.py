@@ -1,10 +1,8 @@
-import json
-from collections import defaultdict
 from ai_part import generate_ai_report
 from graph_visualizer import generate_graph
 
-import os
-import matplotlib.pyplot as plt
+import json
+from collections import defaultdict
 
 
 # 1. Read JSON logs
@@ -43,7 +41,6 @@ def create_incidents(freq, logs):
 
     log_map = {}
 
-    # Store latest log for each issue
     for log in logs:
         key = log["service"] + " | " + log["message"]
         log_map[key] = log
@@ -51,28 +48,21 @@ def create_incidents(freq, logs):
     for issue, count in freq.items():
 
         service, message = issue.split(" | ")
-
         base_log = log_map.get(issue)
 
         level = base_log["level"] if base_log else ""
         timestamp = base_log["timestamp"] if base_log else None
 
-        # Severity logic
         if level == "CRITICAL":
             severity = "CRITICAL"
-
         elif level == "ERROR" and count > 1:
             severity = "HIGH"
-
         elif level == "ERROR":
             severity = "MEDIUM"
-
         elif level == "WARNING":
             severity = "LOW"
-
         elif level == "INFO":
             severity = "INFO"
-
         else:
             severity = "LOW"
 
@@ -88,99 +78,83 @@ def create_incidents(freq, logs):
     return incidents
 
 
-# 4. Generate timeline
+# 4. Timeline
 def generate_timeline(logs):
-
-    timeline = []
-
-    for log in logs:
-        timeline.append(
-            f"{log['timestamp']} | "
-            f"{log['level']} | "
-            f"{log['service']} | "
-            f"{log['message']}"
-        )
-
-    return timeline
+    return [
+        f"{log['timestamp']} | {log['level']} | {log['service']} | {log['message']}"
+        for log in logs
+    ]
 
 
-# 5. Print organized incidents
-def print_incidents(incidents):
+# ---------------- MENU ----------------
 
-    severity_order = {
-    "CRITICAL": 5,
-    "HIGH": 4,
-    "MEDIUM": 3,
-    "LOW": 2,
-    "INFO": 1
-}
-
-    
-    sorted_incidents = sorted(
-        incidents,
-        key=lambda x: severity_order[x["severity"]],
-        reverse=True
-    )
-
-    print("\n================ INCIDENT SUMMARY ================\n")
-
-    for i, incident in enumerate(sorted_incidents, 1):
-
-        print(f"Incident #{i}")
-        print(f"Service     : {incident['service']}")
-        print(f"Issue       : {incident['issue']}")
-        print(f"Log Level   : {incident['level']}")
-        print(f"Severity    : {incident['severity']}")
-        print(f"Occurrences : {incident['count']}")
-        print(f"Timestamp   : {incident['timestamp']}")
-
-        print("-" * 55)
+def show_menu():
+    print("\n================ DEVOPS AI MENU ================\n")
+    print("1. Full Report (AI + Timeline + Incidents + Graph)")
+    print("2. Timeline Only")
+    print("3. Incident Summary Only")
+    print("4. AI Report Only")
+    print("5. Graph Only")
+    print("6. Exit")
+    print("\n===============================================\n")
 
 
-# 6. MAIN PIPELINE
 def main():
 
-    # Read logs
     logs = read_logs("logs.txt")
-
-    # Process logs
     freq = deduplicate(logs)
-
     incidents = create_incidents(freq, logs)
-
     timeline = generate_timeline(logs)
 
-    # Print timeline
-    print("\n================ TIMELINE ================\n")
+    ai_report = None
 
-    for t in timeline:
-        print(t)
+    while True:
 
-    # Print incidents nicely
-    print_incidents(incidents)
+        show_menu()
+        choice = input("Enter choice: ")
 
-    # AI Report
-    print("\n================ AI REPORT ================\n")
+        # EXIT
+        if choice == "6":
+            print("Exiting...")
+            break
 
-    try:
+        # FULL PIPELINE
+        if choice == "1":
+            print("\n================ TIMELINE ================\n")
+            for t in timeline:
+                print(t)
 
-        report = generate_ai_report(incidents, timeline)
+            print("\n================ INCIDENTS ================\n")
+            for i in incidents:
+                print(i)
 
-        with open("ai_report.txt", "w", encoding="utf-8") as f:
-            f.write(str(report))
+            print("\n================ AI REPORT ================\n")
+            ai_report = generate_ai_report(incidents, timeline, "FULL")
+            print(ai_report)
 
-        print(report)
+            generate_graph(incidents)
 
-        print("\nAI report saved to ai_report.txt")
+        elif choice == "2":
+            print("\n================ TIMELINE ================\n")
+            for t in timeline:
+                print(t)
 
-    except Exception as e:
+        elif choice == "3":
+            print("\n================ INCIDENTS ================\n")
+            for i in incidents:
+                print(i)
 
-        print("AI REPORT FAILED:", str(e))
+        elif choice == "4":
+            print("\n================ AI REPORT ================\n")
+            ai_report = generate_ai_report(incidents, timeline, "FULL")
+            print(ai_report)
 
-    # Generate graph
-    generate_graph(incidents)
+        elif choice == "5":
+            generate_graph(incidents)
+
+        else:
+            print("Invalid choice")
 
 
-# Run program
 if __name__ == "__main__":
     main()

@@ -1,55 +1,36 @@
-**Incident Report**
 
-**Incident Summary**
 
-* Multiple incidents occurred between 2026-05-18T10:01:12Z and 2026-05-18T10:01:45Z
-* Affected services: payment-service, api-gateway, auth-service
-* Incident types: Database connection failure, API latency increase, API timeout, Payment service down, User login successful
+Incident Report
 
-**Root Cause Analysis**
+Incident Summary
+----------------
 
-* Likely root cause: Database connection failure in payment-service (2026-05-18T10:01:12Z)
-* Possible causes:
-	+ Database overload or misconfiguration
-	+ Network connectivity issues between payment-service and database
-* Cascading failures:
-	+ API latency increase in api-gateway (2026-05-18T10:01:20Z) likely caused by payment-service database connection failure
-	+ API timeout in api-gateway (2026-05-18T10:01:25Z) likely caused by API latency increase
-	+ Payment service down in payment-service (2026-05-18T10:01:40Z) likely caused by database connection failure
+- Multiple service disruptions occurred between 2026-05-18T10:01:12Z and 2026-05-18T10:01:45Z.
+- Affected services: payment-service, api-gateway, auth-service.
+- Issues reported: Database connection failed, API latency increasing, API timeout, Payment service down, User login successful.
 
-**Impact Analysis**
+Root Cause Analysis
+-------------------
 
-* Affected systems:
-	+ payment-service
-	+ api-gateway
-* Affected users:
-	+ Users attempting to make payments
-	+ Users accessing APIs through api-gateway
-* Severity:
-	+ CRITICAL: Payment service down
-	+ HIGH: Database connection failure
-	+ MEDIUM: API timeout
-	+ LOW: API latency increase
-	+ INFO: User login successful (no impact)
+- Likely root trigger event: Database connection failed (payment-service) at 2026-05-18T10:01:12Z.
+- Cascading failures:
+  - API latency increasing (api-gateway) at 2026-05-18T10:01:20Z ( possibly due to payment-service disruption).
+  - API timeout (api-gateway) at 2026-05-18T10:01:25Z ( possibly due to increased latency).
+  - Payment service down (payment-service) at 2026-05-18T10:01:40Z ( possibly due to prolonged database connection failure).
+- Service dependency chain: payment-service -> api-gateway.
+- Symptom vs root cause: Database connection failed is likely the root cause, while other issues are symptoms.
 
-**Recommended Fixes**
+Impact Analysis
+----------------
 
-* Investigate and resolve database connection failure in payment-service
-* Monitor and optimize database performance
-* Implement retry mechanisms and circuit breakers in api-gateway to handle API timeouts
-* Review and improve service dependency chain to prevent cascading failures
+- Affected systems: payment-service, api-gateway.
+- Affected users: users relying on payment-service and api-gateway.
+- Impact: disrupted payment processing and API functionality.
 
-**Service Dependency Chain**
+Recommended Fixes
+------------------
 
-* payment-service -> database
-* api-gateway -> payment-service
-* auth-service -> (no dependencies)
-
-**Likely Root Trigger Event**
-
-* Database connection failure in payment-service (2026-05-18T10:01:12Z)
-
-**Symptom vs Root Cause**
-
-* Database connection failure is likely the root cause
-* API latency increase, API timeout, and Payment service down are symptoms of the root cause
+- Investigate and resolve the root cause of the database connection failure in payment-service.
+- Implement retry mechanisms and circuit breakers to prevent cascading failures in api-gateway.
+- Monitor service dependencies and implement alerts for potential disruptions.
+- Review and optimize database connection configuration in payment-service.

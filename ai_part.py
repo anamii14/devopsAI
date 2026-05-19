@@ -8,16 +8,52 @@ load_dotenv()
 API_KEY = os.getenv("OPENROUTER_API_KEY")
 
 
-def generate_ai_report(incidents, timeline):
+def generate_ai_report(incidents, timeline, mode="FULL"):
+
     if not API_KEY:
         return "ERROR: OPENROUTER_API_KEY not found in environment variables"
 
-    prompt = f"""
+    base_rules = """
 You are a Senior Site Reliability Engineer (SRE) in a DevOps team.
 
-You are analyzing system incidents from logs.
+Rules:
+- Use bullet points only
+- Be concise and technical
+- No emojis
+- No raw log repetition
+- Follow mode strictly
+"""
 
-Your job is to produce a structured professional incident report.
+    mode_instructions = {
+        "FULL": """
+Return:
+1. Incident Summary
+2. Root Cause Analysis
+3. Impact Analysis
+4. Recommended Fixes
+Include cascading failures and dependency chain.
+""",
+
+        "SUMMARY": """
+Return ONLY Incident Summary.
+""",
+
+        "ROOT_CAUSE": """
+Return ONLY Root Cause Analysis.
+Focus on trigger event and cascading failures.
+""",
+
+        "IMPACT": """
+Return ONLY Impact Analysis.
+""",
+
+        "FIXES": """
+Return ONLY Recommended Fixes (engineering actions only).
+"""
+    }
+
+    prompt = f"""
+{base_rules}
 
 DATA:
 
@@ -28,25 +64,7 @@ TIMELINE:
 {timeline}
 
 TASK:
-
-Generate a clear incident report with:
-
-1. Incident Summary (what happened)
-2. Root Cause Analysis (why it likely happened)
-3. Impact Analysis (what systems/users affected)
-4. Recommended Fixes (engineering actions)
-
-Also identify:
-- cascading failures
-- service dependency chain
-- likely root trigger event
-- whether this is symptom vs root cause
-
-Rules:
-- use points instead of long paragraphs
-- professional output simlar to devops tools like datadog
-- concise, technical, no emojis
-- no raw logs repetition
+{mode_instructions.get(mode, mode_instructions["FULL"])}
 """
 
     try:
